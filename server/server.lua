@@ -214,6 +214,52 @@ if Config.UseGMInventory then
             end
         end
     end)
+
+    RegisterNetEvent("rsg-banking:server:getOthersMoneyClip", function(id, input)
+        local src = source
+        local id = id
+        input = tonumber(input) -- Convert input to a number
+    
+        if not input or input <= 0 then
+            RSGCore.Functions.Notify(src, locale('sv_lang_27'), 'error')
+            return
+        end
+    
+        local Player = RSGCore.Functions.GetPlayer(src)
+        local charName = Player.PlayerData.charinfo.firstname.. ' ' .. Player.PlayerData.charinfo.lastname
+    
+        local otherPlayer = RSGCore.Functions.GetPlayer(id)
+        local otherCharName = otherPlayer.PlayerData.charinfo.firstname.. ' ' .. otherPlayer.PlayerData.charinfo.lastname
+    
+        if not Player then return end
+        if not otherPlayer then return end
+    
+        local money = otherPlayer.Functions.GetMoney('cash')
+    
+        if money and money >= input then
+            if otherPlayer.Functions.RemoveMoney('cash', input, 'give-money') then
+                local info =
+                {
+                    money = input
+                }
+    
+                TriggerEvent('rsg-log:server:CreateLog', 'create-money-clip', 'Create Stolen Money Clip', 'green',
+                    '**Player name**: ' .. GetPlayerName(src) ..
+                    '\n **Player ID**: ' .. src ..
+                    "\n **Character Name:** " .. charName ..
+                    "\n **Amount**: " .. string.format("%.2f", input) ..
+                    "\n **Stole money from**" ..
+                    "\n **Player Name**: " .. GetPlayerName(id) ..
+                    "\n **Character Name**: " .. otherCharName ..
+                    "\n **Player ID**: " .. id
+                , false)
+    
+                Player.Functions.AddItem('moneyclip', 1, false, info)
+                RSGCore.Functions.Notify(src, locale('sv_lang_28') .. string.format("%.2f", input) .. locale('sv_lang_29'), 'success')
+                TriggerClientEvent("rsg-banking:client:closeInventory", src)
+            end
+        end
+    end)
 end
 
 ---------------------------------
