@@ -255,7 +255,7 @@ if Config.UseGMInventory then
                 , false)
     
                 Player.Functions.AddItem('money_clip', 1, false, info)
-                RSGCore.Functions.Notify(src, locale('sv_lang_28') .. string.format("%.2f", input) .. locale('sv_lang_29'), 'success')
+                lib.notify(src, {title = locale('sv_lang_28') .. string.format("%.2f", input) .. locale('sv_lang_29'), type = 'success'})
                 TriggerClientEvent("rsg-banking:client:closeInventory", src)
             end
         end
